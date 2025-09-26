@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Atualizar from '../atualizar';
-import apiClient from '../../services/api';     
-
+import axios from 'axios'; 
+import Atualizar from '../atualizar'; 
 
 interface Avaliacao {
   id: number;
@@ -11,6 +10,8 @@ interface Avaliacao {
 }
 
 function CadastroRestaurante() {
+  const API_URL = "http://localhost:8080"; 
+
   const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([]);
   const [nome, setNome] = useState('');
   const [nota, setNota] = useState(0); 
@@ -19,7 +20,7 @@ function CadastroRestaurante() {
 
   const fetchAvaliacoes = async () => {
     try {
-      const response = await apiClient.get('/avaliacao');
+      const response = await axios.get(API_URL + '/avaliacao');
       setAvaliacoes(response.data);
     } catch (error) {
       console.error("Erro ao buscar avaliações:", error);
@@ -38,7 +39,7 @@ function CadastroRestaurante() {
       comentario 
     };
     try {
-      await apiClient.post('/avaliacao', novaAvaliacao);
+      await axios.post(API_URL + '/avaliacao', novaAvaliacao);
       fetchAvaliacoes(); 
       setNome('');
       setNota(0);
@@ -51,7 +52,7 @@ function CadastroRestaurante() {
   const handleUpdateRestaurant = async (updatedAvaliacao: Avaliacao) => {
     const { id, ...dataToUpdate } = updatedAvaliacao;
     try {
-      await apiClient.put(`/avaliacao/${id}`, dataToUpdate);
+      await axios.put(`${API_URL}/avaliacao/${id}`, dataToUpdate);
       fetchAvaliacoes(); 
       setAvaliacaoEmModal(null);
     } catch (error) {
@@ -62,7 +63,7 @@ function CadastroRestaurante() {
   const handleDelete = async (idToDelete: number) => {
     if (window.confirm("Tem certeza que deseja excluir esta avaliação?")) {
       try {
-        await apiClient.delete(`/avaliacao/${idToDelete}`);
+        await axios.delete(`${API_URL}/avaliacao/${idToDelete}`);
         fetchAvaliacoes(); 
       } catch (error) {
         console.error("Erro ao deletar avaliação:", error);
@@ -101,7 +102,6 @@ function CadastroRestaurante() {
               <p className="mb-1">{avaliacao.comentario}</p>
               <small className="text-warning">Nota: {avaliacao.nota} de 5</small>
             </div>
-            
             <div className="d-flex gap-2">
               <button className="btn btn-outline-secondary btn-sm" onClick={() => setAvaliacaoEmModal(avaliacao)}>
                   <i className="bi bi-pencil-square"></i>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios'; 
 import Comentarios from '../comentarios';
-import apiClient from '../../services/api'; 
 import ImgCards from '../../assets/card.jpg';
+
 
 interface Avaliacao {
   id: number;
@@ -20,14 +21,15 @@ interface Comment {
 const PLACEHOLDER_IMAGE_URL = ImgCards; 
 
 function Restaurantes() {
+  const API_URL = "http://localhost:8080";
+
   const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([]);
   const [selectedAvaliacao, setSelectedAvaliacao] = useState<Avaliacao | null>(null);
-
   const [comments] = useState<Comment[]>([]);
 
   const fetchAvaliacoes = async () => {
     try {
-      const response = await apiClient.get('/avaliacao');
+      const response = await axios.get(API_URL + '/avaliacao');
       setAvaliacoes(response.data);
     } catch (error) {
       console.error("Erro ao buscar avaliações da API:", error);
@@ -48,7 +50,7 @@ function Restaurantes() {
     };
 
     try {
-      await apiClient.post('/avaliacao', novaAvaliacao);
+      await axios.post(API_URL + '/avaliacao', novaAvaliacao);
       fetchAvaliacoes(); 
       handleCloseModal(); 
     } catch (error) {
@@ -60,7 +62,7 @@ function Restaurantes() {
     setSelectedAvaliacao(null);
   };
 
-return (
+  return (
     <div className="container-fluid">
       <h1 className="mb-4">Restaurantes</h1>
       <div className="row">
@@ -71,13 +73,11 @@ return (
               <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{avaliacao.nomeRestaurante}</h5>
                 <p className="card-text text-muted flex-grow-1">{avaliacao.comentario}</p>
-                
                 <div className="d-flex justify-content-end align-items-center mt-auto gap-3">
                   <span className="badge bg-warning text-dark fs-6 p-2">
                     ★ {avaliacao.nota}
                   </span>
                 </div>
-                
               </div>
             </div>
           </div>

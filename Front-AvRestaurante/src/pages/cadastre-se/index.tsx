@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import apiClient from "../../services/api";
+import axios from 'axios';
+
+
+interface CadastroRequest {
+  nome: string;
+  email: string;
+  senha: string;
+}
 
 function Cadastro() {
   const navigator = useNavigate();
+  const API_URL = "http://localhost:8080"; 
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CadastroRequest>({
     nome: '',
     email: '',
     senha: ''
@@ -21,13 +29,18 @@ function Cadastro() {
     event.preventDefault();
     setError(null);
     try {
-      await apiClient.post("/auth/register", formData);
+      
+      await axios.post(API_URL + "/auth/register", formData);
       alert("Cadastro realizado com sucesso! Você será redirecionado para o login.");
       navigator("/login");
     } catch (err: any) {
       console.error("Erro no cadastro:", err);
       if (err.response && err.response.data) {
-        setError(err.response.data.message || "Não foi possível realizar o cadastro.");
+        
+        const errorMessage = typeof err.response.data === 'string' 
+          ? err.response.data
+          : "Não foi possível realizar o cadastro.";
+        setError(errorMessage);
       } else {
         setError("Ocorreu um erro. Tente novamente.");
       }
@@ -47,7 +60,7 @@ function Cadastro() {
               Avalioo
             </h1>
             <p className="lead text-muted">
-              Junte-se à nossa comunidade e comece a compartilhar suas experiências gastronômicas.
+              Junte-se à nossa comunidade e compartilhe suas experiências gastronômicas.
             </p>
           </div>
 
