@@ -1,40 +1,44 @@
-// src/components/CardRestaurante/index.tsx
-
 import ImgCards from '../../assets/card.jpg';
 
-// Reutilize a interface ou defina-a aqui se não tiver um arquivo de tipos compartilhado
-interface Avaliacao {
+interface Restaurante {
   id: number;
-  nomeRestaurante: string;
-  nota: number;
-  comentario: string;
+  nome: string;
+  mediaNota: number;
+  imagemUrl?: string;
 }
 
-// Define as propriedades que o componente CardRestaurante espera receber
 interface CardRestauranteProps {
-  avaliacao: Avaliacao;
+  restaurante: Restaurante;
+  onAvaliarClick: (restaurante: Restaurante) => void; 
 }
 
 const PLACEHOLDER_IMAGE_URL = ImgCards;
 
-// O componente recebe 'avaliacao' via desestruturação das props
-function CardRestaurante({ avaliacao }: CardRestauranteProps) {
+function CardRestaurante({ restaurante, onAvaliarClick }: CardRestauranteProps) {
   return (
     <div className="col-lg-4 col-md-6 mb-4">
       <div className="card h-100 shadow-sm">
-        <img 
-          src={PLACEHOLDER_IMAGE_URL} 
-          className="card-img-top" 
-          alt={avaliacao.nomeRestaurante} 
-          style={{ height: '200px', objectFit: 'cover' }} 
+        <img
+          src={restaurante.imagemUrl || PLACEHOLDER_IMAGE_URL}
+          className="card-img-top"
+          alt={restaurante.nome}
+          style={{ height: "200px", objectFit: "cover" }}
         />
         <div className="card-body d-flex flex-column">
-          <h5 className="card-title">{avaliacao.nomeRestaurante}</h5>
-          <p className="card-text text-muted flex-grow-1">{avaliacao.comentario}</p>
-          <div className="d-flex justify-content-end align-items-center mt-auto gap-3">
-            <span className="badge bg-warning text-dark fs-6 p-2">
-              ★ {avaliacao.nota}
+          <h5 className="card-title">{restaurante.nome}</h5>
+          
+          <div className="d-flex justify-content-between align-items-center mt-auto gap-3">
+            
+            <span className="badge bg-warning text-dark p-2 fs-6">
+              ★ {(restaurante.mediaNota ?? 0).toFixed(1)}
             </span>
+
+            <button 
+              className="btn btn-primary btn-sm"
+              onClick={() => onAvaliarClick(restaurante)}
+            >
+              Avaliar
+            </button>
           </div>
         </div>
       </div>

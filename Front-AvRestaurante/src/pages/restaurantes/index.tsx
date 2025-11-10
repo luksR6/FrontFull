@@ -1,85 +1,105 @@
-// src/pages/Restaurantes/index.tsx
-
 import { useState, useEffect } from 'react';
-import Comentarios from '../comentarios';
-import CardRestaurante from '../../components/cards'; // 1. Importe o novo componente
+import CardRestaurante from '../../components/cards';
 import api from '../../services/api';
+import Comentarios from '../comentarios';
 
-// Interfaces (podem ser movidas para um arquivo de tipos compartilhado)
-interface Avaliacao {
+interface Restaurante {
   id: number;
-  nomeRestaurante: string;
-  nota: number;
-  comentario: string;
+  nome: string;
+  mediaNota: number;
+  imagemUrl?: string;
 }
 
 interface Comment {
   id: number;
-  restaurantId: number;
-  autor: string;
-  texto: string;
+  nota: number;
+  comentario: string;
+  mediaNotaDoRestaurante?: number;
 }
 
 function Restaurantes() {
+  const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
+  const [restauranteSelecionado, setRestauranteSelecionado] = useState<Restaurante | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
 
-  const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([]);
-  const [selectedAvaliacao, setSelectedAvaliacao] = useState<Avaliacao | null>(null);
-  const [comments] = useState<Comment[]>([]);
-
-  const fetchAvaliacoes = async () => {
+  const fetchRestaurantes = async () => {
     try {
-      const response = await api.get<Avaliacao[]>('avaliacao');
-      // aki da o dist
-
-
-      setAvaliacoes(response.data);
+      const response = await api.get<Restaurante[]>('restaurantes');
+      setRestaurantes(response.data);
     } catch (error) {
-      console.error("Erro ao buscar avaliações da API:", error);
+      console.error('Erro ao buscar restaurantes da API:', error);
     }
   };
 
   useEffect(() => {
-    fetchAvaliacoes();
+    fetchRestaurantes();
   }, []);
 
-  const handleAddComment = async (_restaurantId: number, commentText: string) => {
-    if (!selectedAvaliacao) return;
-
-    const novaAvaliacao = {
-      nomeRestaurante: selectedAvaliacao.nomeRestaurante,
-      nota: selectedAvaliacao.nota,
-      comentario: commentText
-    };
-
+  const handleAbrirModal = async (restaurante: Restaurante) => {
+    setRestauranteSelecionado(restaurante);
     try {
-      await api.post('/avaliacao', novaAvaliacao);
-      fetchAvaliacoes();
-      handleCloseModal();
+      const response = await api.get<Comment[]>(`/avaliacao/restaurante/${restaurante.id}`);
+      setComments(response.data);
     } catch (error) {
-      console.error("Erro ao adicionar nova avaliação:", error);
+      console.error('Erro ao buscar comentários:', error);
+      setComments([]);
     }
   };
 
-  const handleCloseModal = () => {
-    setSelectedAvaliacao(null);
+  const handleFecharModal = () => {
+    setRestauranteSelecionado(null);
+    setComments([]);
+  };
+
+  const handleAddAvaliacao = async (nota: number, comentario: string) => {
+    if (!restauranteSelecionado) return;
+
+    const novaAvaliacao = {
+      restauranteId: restauranteSelecionado.id,
+      nota,
+      comentario,
+    };
+
+    try {
+      const response = await api.post<Comment>('/avaliacao', novaAvaliacao);
+      const avaliacaoRetornada = response.data;
+
+      handleFecharModal();
+
+      setRestaurantes((listaAntiga) =>
+        listaAntiga.map((restaurante) =>
+          restaurante.id === restauranteSelecionado.id &&
+          avaliacaoRetornada.mediaNotaDoRestaurante != null
+            ? { ...restaurante, mediaNota: avaliacaoRetornada.mediaNotaDoRestaurante }
+            : restaurante
+        )
+      );
+    } catch (error) {
+      console.error('Erro ao adicionar nova avaliação:', error);
+    }
   };
 
   return (
     <div className="container-fluid">
       <h1 className="mb-4">Restaurantes</h1>
       <div className="row">
-        {/* 2. Use o componente CardRestaurante aqui */}
-        {avaliacoes.map((avaliacao) => (
-          <CardRestaurante key={avaliacao.id} avaliacao={avaliacao} />
+        {restaurantes.map((restaurante) => (
+          <CardRestaurante
+            key={restaurante.id}
+            restaurante={restaurante}
+            onAvaliarClick={handleAbrirModal}
+          />
         ))}
       </div>
 
-      <Comentarios
-        restaurant={selectedAvaliacao}
-        comments={comments}
-        onClose={handleCloseModal}
-        onAddComment={handleAddComment}
-      />
+      {restauranteSelecionado && (
+        <Comentarios
+          restaurante={restauranteSelecionado}
+          onClose={handleFecharModal}
+          onAddComment={handleAddAvaliacao}
+          comments={comments}
+        />
+      )}
     </div>
   );
 }
