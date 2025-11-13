@@ -51,9 +51,6 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
               </Link>
             </li>
             <li className="nav-item">
-              <Link to="/login" className="nav-link" onClick={onClose}>
-                Sair (Logout)
-              </Link>
             </li>
           </ul>
         </div>
