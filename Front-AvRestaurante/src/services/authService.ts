@@ -1,29 +1,40 @@
 import api from "./api";
 
 export interface LoginRequest {
-    email: string;
-    senha: string;
-  }
-  
-  export interface LoginResponse {
-    token: string;
-  }
+    email: string;
+    senha: string;
+}
 
-  const authService = {
+interface UsuarioResponse {
+  nome: string;
+  email: string;
+}
 
-  }
 
-  export async function LoginNovo(LoginRequest:LoginRequest):Promise<LoginResponse> {
-    const response = await api.post<LoginResponse>("auth/login", LoginRequest);
+export interface LoginRespostaCompleta {
+    token: string;
+    usuario: UsuarioResponse;
+    tipoPerfil: 'admin' | 'usuario' | null; 
+}
 
-    return response.data;
-  }
+const authService = {
+  LoginNovo
+};
 
-  /*const login = async(LoginRequest : LoginRequest): Promise<LoginResponse> => {
+export async function LoginNovo(LoginRequest: LoginRequest): Promise<LoginRespostaCompleta> {
+    
+    const response = await api.post<LoginRespostaCompleta>("auth/login", LoginRequest);
+
+    return response.data;
+}
+
+/*const login = async(LoginRequest : LoginRequest): Promise<LoginResponse> => {
     const response = await api.post<LoginResponse>("auth/login", LoginRequest);
 
     return response.data;
   }*/
 
+export default authService;
 
-  export default authService;
+
+  
