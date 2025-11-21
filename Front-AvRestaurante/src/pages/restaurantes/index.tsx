@@ -1,44 +1,43 @@
 import { useState, useEffect } from 'react';
-import CardRestaurante from '../../components/cards';
+import { useLocation, useNavigate } from 'react-router-dom'; 
+import CardRestaurante from '../../components/cards'; 
 import api from '../../services/api';
-import Comentarios from '../comentarios';
+import Comentarios from '../../components/comentarios'; 
 
-interface Restaurante {
-  id: number;
-  nome: string;
-  mediaNota: number;
-  imagemUrl?: string;
-}
-
-interface Comment {
-  id: number;
-  nota: number;
-  comentario: string;
-  mediaNotaDoRestaurante?: number;
-}
+import type { Restaurante, Avaliacao } from '../../types'; 
 
 function Restaurantes() {
+  const navigate = useNavigate(); 
+  
   const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
   const [restauranteSelecionado, setRestauranteSelecionado] = useState<Restaurante | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<Avaliacao[]>([]);
+
+  const location = useLocation();
+  const termoBusca = location.state?.termoBusca || "";
 
   const fetchRestaurantes = async () => {
     try {
-      const response = await api.get<Restaurante[]>('restaurantes');
+      let url = '/restaurantes';
+      if (termoBusca) {
+        url += `?nome=${encodeURIComponent(termoBusca)}`;
+      }
+      const response = await api.get<Restaurante[]>(url);
       setRestaurantes(response.data);
     } catch (error) {
-      console.error('Erro ao buscar restaurantes da API:', error);
+      console.error('Erro ao buscar restaurantes:', error);
+      setRestaurantes([]);
     }
   };
 
   useEffect(() => {
     fetchRestaurantes();
-  }, []);
+  }, [termoBusca]);
 
   const handleAbrirModal = async (restaurante: Restaurante) => {
     setRestauranteSelecionado(restaurante);
     try {
-      const response = await api.get<Comment[]>(`/avaliacao/restaurante/${restaurante.id}`);
+      const response = await api.get<Avaliacao[]>(`/avaliacao/restaurante/${restaurante.id}`);
       setComments(response.data);
     } catch (error) {
       console.error('Erro ao buscar comentários:', error);
@@ -61,7 +60,7 @@ function Restaurantes() {
     };
 
     try {
-      const response = await api.post<Comment>('/avaliacao', novaAvaliacao);
+      const response = await api.post<Avaliacao>('/avaliacao', novaAvaliacao);
       const avaliacaoRetornada = response.data;
 
       handleFecharModal();
@@ -80,16 +79,42 @@ function Restaurantes() {
   };
 
   return (
-    <div className="container-fluid">
-      <h1 className="mb-4">Restaurantes</h1>
+    <div className="container-fluid p-4">
+      
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h1>Restaurantes</h1>
+        {termoBusca && (
+          <div className="d-flex align-items-center">
+            <span className="badge bg-secondary fs-6 me-2">
+              Buscando por: "{termoBusca}"
+            </span>
+            
+            <button 
+                className="btn btn-link text-danger text-decoration-none small fw-bold p-0"
+                onClick={() => navigate('/restaurantes', { state: {} })}
+            >
+               Limpar
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="row">
-        {restaurantes.map((restaurante) => (
-          <CardRestaurante
-            key={restaurante.id}
-            restaurante={restaurante}
-            onAvaliarClick={handleAbrirModal}
-          />
-        ))}
+        {restaurantes.length > 0 ? (
+          restaurantes.map((restaurante) => (
+            <CardRestaurante
+              key={restaurante.id}
+              restaurante={restaurante}
+              onAvaliarClick={handleAbrirModal}
+            />
+          ))
+        ) : (
+          <div className="col-12 text-center mt-5">
+            <p className="text-muted fs-4">
+              Nenhum restaurante encontrado{termoBusca ? ` para "${termoBusca}"` : ""}.
+            </p>
+          </div>
+        )}
       </div>
 
       {restauranteSelecionado && (

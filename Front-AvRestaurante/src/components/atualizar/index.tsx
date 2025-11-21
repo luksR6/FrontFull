@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Restaurante } from '../cadastroRestaurante/'; 
+import type { Restaurante } from '../../types'; 
 
 interface AtualizarProps {
   restaurante: Restaurante | null;
@@ -24,10 +24,13 @@ function Atualizar({ restaurante, onClose, onSave, isSubmitting }: AtualizarProp
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSave({
+    
+    const restauranteAtualizado: Restaurante = {
       ...restaurante,
       nome: nome,
-    });
+    };
+
+    onSave(restauranteAtualizado);
   };
 
   return (

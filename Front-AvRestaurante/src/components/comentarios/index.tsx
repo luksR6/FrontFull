@@ -1,20 +1,9 @@
 import React, { useState } from "react";
-
-interface Restaurante {
-  id: number;
-  nome: string;
-  mediaNota: number;
-}
-
-interface Comment {
-  id: number;
-  nota: number;
-  comentario: string;
-}
+import type { Restaurante, Avaliacao } from '../../types'; 
 
 interface CommentsModalProps {
-  restaurante: Restaurante | null;
-  comments: Comment[];
+  restaurante: Restaurante | null; 
+  comments: Avaliacao[];           
   onClose: () => void;
   onAddComment: (nota: number, comentario: string) => void;
 }

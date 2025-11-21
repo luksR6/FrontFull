@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Atualizar from '../atualizar';
-import Spinner from '../../components/loading';
+import Atualizar from '../../components/atualizar'; 
+import Spinner from '../../components/loading'; 
 import api from '../../services/api';
+import type { Restaurante } from '../../types';
 
-export interface Restaurante {
-  id: number;
-  nome: string; 
-}
 
 function CadastroRestaurante() {
 
@@ -21,7 +18,7 @@ function CadastroRestaurante() {
   const fetchRestaurantes = async () => {
     setIsLoadingPage(true);
     try {
-      const response = await api.get('/restaurantes');
+      const response = await api.get<Restaurante[]>('/restaurantes');
       setRestaurantes(response.data);
     } catch (error) {
       console.error("Erro ao buscar restaurantes:", error);
@@ -79,7 +76,7 @@ function CadastroRestaurante() {
   };
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid p-4">
       <h1>Cadastro do Restaurante</h1>
 
       <form onSubmit={handleSubmit} className="mb-5">

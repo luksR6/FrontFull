@@ -1,20 +1,28 @@
 import ImgCards from '../../assets/card.jpg';
-
-interface Restaurante {
-  id: number;
-  nome: string;
-  mediaNota: number;
-  imagemUrl?: string;
-}
+import { useDispatch } from 'react-redux';
+import { adicionarVistoRecentemente } from '../../redux/recenteSlice'; 
+import type { Restaurante } from '../../types';
 
 interface CardRestauranteProps {
-  restaurante: Restaurante;
+  restaurante: Restaurante; 
   onAvaliarClick: (restaurante: Restaurante) => void; 
 }
 
 const PLACEHOLDER_IMAGE_URL = ImgCards;
 
 function CardRestaurante({ restaurante, onAvaliarClick }: CardRestauranteProps) {
+  const dispatch = useDispatch();
+
+  const handleClick = () => {
+    dispatch(adicionarVistoRecentemente({
+      id: restaurante.id,
+      nome: restaurante.nome,
+      imagemUrl: restaurante.imagemUrl || PLACEHOLDER_IMAGE_URL 
+    }));
+
+    onAvaliarClick(restaurante);
+  };
+
   return (
     <div className="col-lg-4 col-md-6 mb-4">
       <div className="card h-100 shadow-sm">
@@ -23,6 +31,7 @@ function CardRestaurante({ restaurante, onAvaliarClick }: CardRestauranteProps) 
           className="card-img-top"
           alt={restaurante.nome}
           style={{ height: "200px", objectFit: "cover" }}
+          onError={(e) => { e.currentTarget.src = PLACEHOLDER_IMAGE_URL; }}
         />
         <div className="card-body d-flex flex-column">
           <h5 className="card-title">{restaurante.nome}</h5>
@@ -35,7 +44,7 @@ function CardRestaurante({ restaurante, onAvaliarClick }: CardRestauranteProps) 
 
             <button 
               className="btn btn-primary btn-sm"
-              onClick={() => onAvaliarClick(restaurante)}
+              onClick={handleClick}
             >
               Avaliar
             </button>

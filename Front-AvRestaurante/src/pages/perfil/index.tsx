@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import api from '../../services/api';
-import CardAvaliacao, { type Avaliacao } from '../../components/cardsAvaliacao';
-
-
+import api from '../../services/api'; 
+import CardAvaliacao from '../../components/cardsAvaliacao'; 
+import type { Avaliacao } from '../../types';
 
 function Perfil() {
   const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([]);
@@ -48,16 +47,7 @@ function Perfil() {
               marginRight: '15px',
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              fill="currentColor"
-              className="bi bi-person-fill text-secondary"
-              viewBox="0 0 16 16"
-            >
-              <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-            </svg>
+            <i className="bi bi-person-fill text-secondary fs-2"></i>
           </div>
           <div>
             <h2 className="fw-bold mb-0">{usuarioVisual.name}</h2>
@@ -78,7 +68,9 @@ function Perfil() {
             </div>
           ))
         ) : (
-          <p className="text-center text-muted">Você ainda não fez nenhuma avaliação.</p>
+          <div className="col-12 text-center">
+            <p className="text-muted">Você ainda não fez nenhuma avaliação.</p>
+          </div>
         )}
       </div>
     </div>

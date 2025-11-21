@@ -1,40 +1,24 @@
 import api from "./api";
 
-export interface LoginRequest {
-    email: string;
-    senha: string;
+import type { LoginRequest, LoginRespostaDto, CadastroRequest } from "../types";
+
+export async function LoginNovo(data: LoginRequest): Promise<LoginRespostaDto> {
+    const response = await api.post<LoginRespostaDto>("/auth/login", data);
+    return response.data;
 }
 
-interface UsuarioResponse {
-  nome: string;
-  email: string;
+export async function cadastrarUsuario(data: CadastroRequest): Promise<void> {
+    await api.post("/auth/register", data);
 }
 
-
-export interface LoginRespostaCompleta {
-    token: string;
-    usuario: UsuarioResponse;
-    tipoPerfil: 'admin' | 'usuario' | null; 
+export async function esqueciMinhaSenha(email: string): Promise<void> {
+    await api.post("/auth/esqueciMinhaSenha", { email });
 }
 
 const authService = {
-  LoginNovo
+  LoginNovo,
+  cadastrarUsuario,
+  esqueciMinhaSenha
 };
 
-export async function LoginNovo(LoginRequest: LoginRequest): Promise<LoginRespostaCompleta> {
-    
-    const response = await api.post<LoginRespostaCompleta>("auth/login", LoginRequest);
-
-    return response.data;
-}
-
-/*const login = async(LoginRequest : LoginRequest): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>("auth/login", LoginRequest);
-
-    return response.data;
-  }*/
-
 export default authService;
-
-
-  
