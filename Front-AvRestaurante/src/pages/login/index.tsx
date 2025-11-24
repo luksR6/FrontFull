@@ -30,8 +30,10 @@ const Login = () => {
 
     try {
       const loginResponse = await LoginNovo(formData);
+
       if (loginResponse && loginResponse.token) {
-        console.log("Login bem-sucedido");
+        console.log("Login bem-sucedido (Memória apenas)");
+
         dispatch(loginSucesso({
           usuario: loginResponse.usuario,
           token: loginResponse.token,
@@ -54,30 +56,21 @@ const Login = () => {
   };
 
   return (
-    <div 
-      className="container-fluid vh-100 d-flex align-items-center justify-content-center"
-      style={{ background: 'linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%)' }}
-    >
+    <div className="container-fluid vh-100 d-flex align-items-center justify-content-center"
+         style={{ background: 'linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%)' }}>
       <div className="col-11 col-md-10 col-lg-9 col-xl-8">
         <div className="row align-items-center shadow-lg" style={{ backgroundColor: 'white', borderRadius: '1rem' }}>
           
           <div className="col-md-6 text-center text-md-start p-5">
-            <h1 className="display-4 fw-bold">
-              <i className="bi bi-patch-check-fill me-3"></i>
-              Avalioo
-            </h1>
-            <p className="lead text-muted">
-              Encontre, avalie e descubra os melhores restaurantes da sua cidade.
-            </p>
+            <h1 className="display-4 fw-bold"><i className="bi bi-patch-check-fill me-3"></i>Avalioo</h1>
+            <p className="lead text-muted">Encontre, avalie e descubra os melhores restaurantes da sua cidade.</p>
           </div>
 
           <div className="col-md-6 border-start">
             <div className="p-5">
               <form onSubmit={handleSubmit}>
                 <h3 className="text-center mb-4">Login</h3>
-                
                 {error && <div className="alert alert-danger">{error}</div>}
-
                 <div className="mb-3">
                   <label className="form-label">Email</label>
                   <input type="text" name="email" className="form-control" placeholder="Digite seu email" value={formData.email} onChange={handleChange} required />

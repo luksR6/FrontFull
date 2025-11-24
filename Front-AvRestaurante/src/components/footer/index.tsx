@@ -1,5 +1,3 @@
-// src/components/Footer.tsx
-
 function Footer() {
     return (
         <footer className="bg-dark text-white text-center py-3">

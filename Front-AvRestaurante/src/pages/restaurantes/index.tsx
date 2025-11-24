@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom'; 
-import CardRestaurante from '../../components/cards'; 
-import api from '../../services/api';
-import Comentarios from '../../components/comentarios'; 
-
+import CardRestaurante from '../../components/cards';
+import Comentarios from '../../components/comentarios';
+import restauranteService from '../../services/restauranteService';
 import type { Restaurante, Avaliacao } from '../../types'; 
 
 function Restaurantes() {
@@ -18,12 +17,8 @@ function Restaurantes() {
 
   const fetchRestaurantes = async () => {
     try {
-      let url = '/restaurantes';
-      if (termoBusca) {
-        url += `?nome=${encodeURIComponent(termoBusca)}`;
-      }
-      const response = await api.get<Restaurante[]>(url);
-      setRestaurantes(response.data);
+      const dados = await restauranteService.listarRestaurantes(termoBusca);
+      setRestaurantes(dados);
     } catch (error) {
       console.error('Erro ao buscar restaurantes:', error);
       setRestaurantes([]);
@@ -37,8 +32,8 @@ function Restaurantes() {
   const handleAbrirModal = async (restaurante: Restaurante) => {
     setRestauranteSelecionado(restaurante);
     try {
-      const response = await api.get<Avaliacao[]>(`/avaliacao/restaurante/${restaurante.id}`);
-      setComments(response.data);
+      const dados = await restauranteService.listarAvaliacoesPorRestaurante(restaurante.id);
+      setComments(dados);
     } catch (error) {
       console.error('Erro ao buscar comentários:', error);
       setComments([]);
@@ -60,8 +55,7 @@ function Restaurantes() {
     };
 
     try {
-      const response = await api.post<Avaliacao>('/avaliacao', novaAvaliacao);
-      const avaliacaoRetornada = response.data;
+      const avaliacaoRetornada = await restauranteService.enviarAvaliacao(novaAvaliacao);
 
       handleFecharModal();
 

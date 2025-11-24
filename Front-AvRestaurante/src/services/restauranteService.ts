@@ -41,15 +41,25 @@ export async function deletarRestaurante(id: number): Promise<void> {
   await api.delete(`/restaurantes/${id}`);
 }
 
+export async function deletarAvaliacao(id: number): Promise<void> {
+  await api.delete(`/avaliacao/${id}`);
+}
+
+export async function listarMinhasAvaliacoes(): Promise<Avaliacao[]> {
+  const response = await api.get<Avaliacao[]>("/avaliacao/me");
+  return response.data;
+}
+
 const restauranteService = {
   listarRestaurantes,
   listarAvaliacoesPorRestaurante,
   listarTodasAvaliacoes,
   enviarAvaliacao,
-  // Exportando as novas funções:
   cadastrarRestaurante,
   atualizarRestaurante,
-  deletarRestaurante
+  deletarRestaurante,
+  deletarAvaliacao,
+  listarMinhasAvaliacoes
 };
 
 export default restauranteService;

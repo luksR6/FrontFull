@@ -1,8 +1,10 @@
 export type TipoPerfil = 'admin' | 'usuario' | null;
 
 export interface Usuario {
+  id?: number;
   email: string;
   nome: string;
+  role?: string;
 }
 
 export interface LoginRequest {

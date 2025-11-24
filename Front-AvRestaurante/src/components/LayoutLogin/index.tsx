@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 
 function LayoutLogin() {
   return (
-    <div>
+    <div className="login-layout-container">
       <Outlet />
     </div>
   );

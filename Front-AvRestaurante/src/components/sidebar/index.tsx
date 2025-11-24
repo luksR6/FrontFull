@@ -13,7 +13,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [busca, setBusca] = useState("");
 
   const { tipoPerfil } = useSelector((state: RootState) => state.auth);
-  // Certifique-se de que 'recentes' está no seu store
+
   const recentes = useSelector((state: RootState) => state.recentes?.items || []);
 
   if (!isOpen) return null;
@@ -21,11 +21,11 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (busca.trim()) {
-      // MUDANÇA: Navega para a página de restaurantes enviando o termo no 'state'
+
       navigate('/restaurantes', { state: { termoBusca: busca } });
       
-      setBusca(""); // Limpa o campo
-      onClose();    // Fecha a sidebar
+      setBusca(""); 
+      onClose();   
     }
   };
 
@@ -45,7 +45,6 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         
         <div className="offcanvas-body d-flex flex-column">
           
-          {/* --- 1. CAMPO DE BUSCA --- */}
           <form onSubmit={handleSearch} className="mb-4">
             <div className="input-group">
               <input 
@@ -61,7 +60,6 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           </form>
 
-          {/* --- LINKS DE NAVEGAÇÃO --- */}
           <ul className="navbar-nav justify-content-end flex-grow-0 pe-3">
             <li className="nav-item"><Link to="/" className="nav-link" onClick={onClose}>Home</Link></li>
             <li className="nav-item"><Link to="/restaurantes" className="nav-link" onClick={onClose}>Restaurantes</Link></li>
@@ -69,27 +67,24 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
             
             {tipoPerfil === 'admin' && (
               <li className="nav-item">
-                  <Link to="/cadastroRestaurante" className="nav-link text-warning" onClick={onClose}>
+                  <Link to="/cadastroRestaurante" className="nav-link" onClick={onClose}>
                     Cadastrar
                   </Link>
               </li>
             )}
           </ul>
 
-          {/* --- 2. SEÇÃO VISTOS POR ÚLTIMO --- */}
           {recentes.length > 0 && (
             <div className="mt-auto border-top pt-3">
               <h6 className="text-white-50 mb-3">Vistos Recentemente</h6>
               <ul className="list-unstyled">
                 {recentes.map((item) => (
                   <li key={item.id} className="mb-2">
-                    {/* Ao clicar, vai para o restaurante e fecha a sidebar */}
                     <Link 
-                      to={`/restaurantes`} // (Idealmente seria /restaurantes/{id}) 
+                      to={`/restaurantes`} 
                       className="d-flex align-items-center text-decoration-none text-white"
                       onClick={onClose}
                     >
-                      {/* Imagem pequena (thumbnail) */}
                       <div 
                         className="me-2 rounded bg-secondary" 
                         style={{ width: '40px', height: '40px', overflow: 'hidden', flexShrink: 0 }}
@@ -99,7 +94,6 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                             src={item.imagemUrl} 
                             alt={item.nome} 
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                             // Fallback simples se a imagem quebrar
                             onError={(e) => {
                                 e.currentTarget.style.display = 'none';
                                 e.currentTarget.parentElement?.classList.add('d-flex', 'align-items-center', 'justify-content-center');

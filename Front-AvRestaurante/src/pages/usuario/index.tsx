@@ -1,45 +1,49 @@
 import { useEffect, useState } from "react";
-import {
-  buscarTodosUsuarios,
-  type Usuario,
-} from "../../services/usuarioService";
+import { buscarTodosUsuarios } from "../../services/usuarioService";
+import type { Usuario } from "../../types";
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
   useEffect(() => {
     const carregarUsuarios = async () => {
-      const usuarios = await buscarTodosUsuarios();
-      setUsuarios(usuarios);
+      try {
+        const dados = await buscarTodosUsuarios();
+        setUsuarios(dados);
+      } catch (error) {
+        console.error("Erro ao carregar usuários", error);
+      }
     };
 
-    carregarUsuarios;
+    carregarUsuarios(); 
   }, []);
 
   return (
-    <div className="mt-4">
-      <h2 className="mt-4">Painel de Usuarios</h2>
-      <table className="table table-striped table-hover">
-        <thead className="thead-dark">
-          <tr>
-            <td>ID</td>
-            <td>Nome</td>
-            <td>CPF</td>
-            <td>Email</td>
-          </tr>
-        </thead>
-
-        <body>
-          {usuarios.map((usuarios) => (
-            <tr key={usuarios.id}>
-              <td>{usuarios.id}</td>
-              <td>{usuarios.nome}</td>
-              <td>{usuarios.CPF}</td>
-              <td>{usuarios.email}</td>
+    <div className="container mt-4"> 
+      <h2 className="mb-4">Painel de Usuários</h2>
+      
+      <div className="table-responsive">
+        <table className="table table-striped table-hover">
+          <thead className="table-dark"> 
+            <tr>
+              <th>ID</th> 
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Email</th>
             </tr>
-          ))}
-        </body>
-      </table>
+          </thead>
+
+          <tbody>
+            {usuarios.map((usuario) => (
+              <tr key={usuario.id}>
+                <td>{usuario.id}</td>
+                <td>{usuario.nome}</td>
+                <td>{usuario.email}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

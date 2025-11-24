@@ -1,14 +1,13 @@
 import api from "./api";
+import type { Usuario } from "../types";
 
-export interface Usuario{
-    id: number,
-    nome: string,
-    CPF: string,
-    email: string
-}
-
-export async function buscarTodosUsuarios() : Promise<Usuario[]> {
+export async function buscarTodosUsuarios(): Promise<Usuario[]> {
     const response = await api.get<Usuario[]>("/usuarios");
-
     return response.data;
 }
+
+const usuarioService = {
+    buscarTodosUsuarios
+};
+
+export default usuarioService;
