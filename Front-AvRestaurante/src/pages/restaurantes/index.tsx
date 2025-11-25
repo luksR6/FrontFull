@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom'; 
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import CardRestaurante from '../../components/cards';
 import Comentarios from '../../components/comentarios';
 import restauranteService from '../../services/restauranteService';
-import type { Restaurante, Avaliacao } from '../../types'; 
+import type { Restaurante, Avaliacao } from '../../types';
+import type { RootState } from '../../redux/store';
 
 function Restaurantes() {
-  const navigate = useNavigate(); 
-  
+  const navigate = useNavigate();
+
   const [restaurantes, setRestaurantes] = useState<Restaurante[]>([]);
   const [restauranteSelecionado, setRestauranteSelecionado] = useState<Restaurante | null>(null);
   const [comments, setComments] = useState<Avaliacao[]>([]);
@@ -15,9 +17,19 @@ function Restaurantes() {
   const location = useLocation();
   const termoBusca = location.state?.termoBusca || "";
 
+  const tipoUsuario = useSelector((state: RootState) => state.auth.tipoPerfil);
+  const isAdmin = tipoUsuario === 'admin';
+
   const fetchRestaurantes = async () => {
     try {
-      const dados = await restauranteService.listarRestaurantes(termoBusca);
+      let dados: Restaurante[] = [];
+
+      if (isAdmin) {
+        dados = await restauranteService.listarRestaurantesDoAdmin(termoBusca);
+      } else {
+        dados = await restauranteService.listarRestaurantesParaAvaliar(termoBusca);
+      }
+
       setRestaurantes(dados);
     } catch (error) {
       console.error('Erro ao buscar restaurantes:', error);
@@ -27,7 +39,7 @@ function Restaurantes() {
 
   useEffect(() => {
     fetchRestaurantes();
-  }, [termoBusca]);
+  }, [termoBusca, tipoUsuario]);
 
   const handleAbrirModal = async (restaurante: Restaurante) => {
     setRestauranteSelecionado(restaurante);
@@ -46,7 +58,7 @@ function Restaurantes() {
   };
 
   const handleAddAvaliacao = async (nota: number, comentario: string) => {
-    if (!restauranteSelecionado) return;
+    if (!restauranteSelecionado || isAdmin) return;
 
     const novaAvaliacao = {
       restauranteId: restauranteSelecionado.id,
@@ -74,7 +86,6 @@ function Restaurantes() {
 
   return (
     <div className="container-fluid p-4">
-      
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>Restaurantes</h1>
         {termoBusca && (
@@ -84,8 +95,8 @@ function Restaurantes() {
             </span>
             
             <button 
-                className="btn btn-link text-danger text-decoration-none small fw-bold p-0"
-                onClick={() => navigate('/restaurantes', { state: {} })}
+              className="btn btn-link text-danger text-decoration-none small fw-bold p-0"
+              onClick={() => navigate('/restaurantes', { state: {} })}
             >
                Limpar
             </button>
@@ -100,6 +111,7 @@ function Restaurantes() {
               key={restaurante.id}
               restaurante={restaurante}
               onAvaliarClick={handleAbrirModal}
+              labelBotao={isAdmin ? "Ver Comentários" : "Avaliar"}
             />
           ))
         ) : (
@@ -117,6 +129,8 @@ function Restaurantes() {
           onClose={handleFecharModal}
           onAddComment={handleAddAvaliacao}
           comments={comments}
+          readOnly={isAdmin}
+          onRefresh={fetchRestaurantes}
         />
       )}
     </div>

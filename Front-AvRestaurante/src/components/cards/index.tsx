@@ -5,13 +5,16 @@ import type { Restaurante } from '../../types';
 
 interface CardRestauranteProps {
   restaurante: Restaurante; 
-  onAvaliarClick: (restaurante: Restaurante) => void; 
+  onAvaliarClick: (restaurante: Restaurante) => void;
+  labelBotao?: string;
 }
 
 const PLACEHOLDER_IMAGE_URL = ImgCards;
 
-function CardRestaurante({ restaurante, onAvaliarClick }: CardRestauranteProps) {
+function CardRestaurante({ restaurante, onAvaliarClick, labelBotao }: CardRestauranteProps) {
   const dispatch = useDispatch();
+
+  const textoBotao = labelBotao || "Avaliar";
 
   const handleClick = () => {
     dispatch(adicionarVistoRecentemente({
@@ -46,7 +49,7 @@ function CardRestaurante({ restaurante, onAvaliarClick }: CardRestauranteProps) 
               className="btn btn-primary btn-sm"
               onClick={handleClick}
             >
-              Avaliar
+              {textoBotao}
             </button>
           </div>
         </div>
