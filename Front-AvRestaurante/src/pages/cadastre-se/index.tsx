@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../../services/api";
 import type { CadastroRequest } from "../../types";
+import { cadastrarUsuario } from "../../services/authService";
 
 function Cadastro() {
   const navigator = useNavigate();
@@ -26,7 +26,7 @@ function Cadastro() {
     setIsLoading(true);
 
     try {
-      await api.post("/auth/register", formData);
+      await cadastrarUsuario(formData);
 
       alert("Cadastro realizado com sucesso! Faça login para continuar.");
       navigator("/login");

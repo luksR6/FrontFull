@@ -7,7 +7,7 @@ export async function LoginNovo(data: LoginRequest): Promise<LoginRespostaDto> {
 }
 
 export async function cadastrarUsuario(data: CadastroRequest): Promise<void> {
-    await api.post("/auth/register", data);
+  await api.post('/usuarios', data);
 }
 
 export async function esqueciMinhaSenha(email: string): Promise<void> {
